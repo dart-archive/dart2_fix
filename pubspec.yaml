@@ -1,6 +1,6 @@
 name: dart2_fix
 description: A tool to migrate API usage to Dart 2.
-version: 1.0.0
+version: 1.0.0-dev
 
 environment:
   sdk: '>=1.20.1 <2.0.0'

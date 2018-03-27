@@ -7,9 +7,9 @@ import 'dart:io';
 import 'package:dart2_fix/src/dart2_fix.dart' as dart2_fix;
 
 main(List<String> args) async {
-  dart2_fix.ExitCode result = await dart2_fix.main(args);
+  dart2_fix.ExitResult result = await dart2_fix.main(args);
   if (!result.isOk && result.errorMessage != null) {
     stderr.writeln(result.errorMessage);
   }
-  exit(result.statusCode);
+  exit(result.result);
 }

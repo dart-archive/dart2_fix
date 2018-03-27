@@ -6,25 +6,25 @@ import 'dart:async';
 
 //import 'package:args/args.dart';
 
-Future<ExitCode> main(List<String> args) async {
+Future<ExitResult> main(List<String> args) async {
   // TODO: implement the UI
 
   if (args.isNotEmpty) {
-    return new ExitCode(1, 'unexpected argument: ${args.first}');
+    return new ExitResult(1, 'unexpected argument: ${args.first}');
   }
 
-  return ExitCode.ok;
+  return ExitResult.ok;
 }
 
-class ExitCode {
-  static final ExitCode ok = new ExitCode(0);
+class ExitResult {
+  static final ExitResult ok = new ExitResult(0);
 
-  final int statusCode;
+  final int result;
   final String errorMessage;
 
-  ExitCode(this.statusCode, [this.errorMessage]);
+  ExitResult(this.result, [this.errorMessage]);
 
-  bool get isOk => statusCode == 0;
+  bool get isOk => result == 0;
 
-  String toString() => statusCode.toString();
+  String toString() => result.toString();
 }
