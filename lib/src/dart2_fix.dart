@@ -6,6 +6,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dart2_fix/src/deprecation_fix.dart';
 
 // Duration.ZERO ==> Duration.zero
 
@@ -57,8 +59,12 @@ Future<ExitResult> main(List<String> args) async {
 
   bool dryRun = !results['apply'];
 
-  // TODO: implement
+  // TODO(devoncarew): implement
   print('dryrun: $dryRun over ${dirs}');
+
+  var fixer = new DeprecationFixer(PhysicalResourceProvider.INSTANCE);
+  // TODO(brianwilkerson) Compute the paths of the files / directories to be fixed.
+  fixer.fixFiles(dirs.map((d) => d.path).toList());
 
   return ExitResult.ok;
 }
