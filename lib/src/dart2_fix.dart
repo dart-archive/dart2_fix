@@ -4,6 +4,9 @@
 
 import 'dart:async';
 
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:dart2_fix/src/deprecation_fix.dart';
+
 //import 'package:args/args.dart';
 
 Future<ExitResult> main(List<String> args) async {
@@ -12,6 +15,10 @@ Future<ExitResult> main(List<String> args) async {
   if (args.isNotEmpty) {
     return new ExitResult(1, 'unexpected argument: ${args.first}');
   }
+
+  var fixer = new DeprecationFixer(PhysicalResourceProvider.INSTANCE);
+  // TODO(brianwilkerson) Compute the paths of the files / directories to be fixed.
+  fixer.fixFiles(<String>[]);
 
   return ExitResult.ok;
 }
