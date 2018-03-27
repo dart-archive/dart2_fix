@@ -18,8 +18,6 @@ dart_task:
 # them against each Dart version.
 matrix:
   include:
-  - dart: stable
-    dart_task: dartfmt
   - dart: dev
     dart_task: dartanalyzer
 
