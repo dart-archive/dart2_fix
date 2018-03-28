@@ -49,11 +49,11 @@ final Map<String, String> _textReplacements = {
   'DateTime.DECEMBER': 'DateTime.december',
   'DateTime.MONTHS_PER_YEAR': 'DateTime.monthsPerYear',
 
-  'double.NAN': 'DateTime.nan',
-  'double.INFINITY': 'DateTime.infinity',
-  'double.NEGATIVE_INFINITY': 'DateTime.negativeInfinity',
-  'double.MIN_POSITIVE': 'DateTime.minPositive',
-  'double.MAX_FINITE': 'DateTime.maxFinite',
+  'double.NAN': 'double.nan',
+  'double.INFINITY': 'double.infinity',
+  'double.NEGATIVE_INFINITY': 'double.negativeInfinity',
+  'double.MIN_POSITIVE': 'double.minPositive',
+  'double.MAX_FINITE': 'double.maxFinite',
 
   'Duration.MICROSECONDS_PER_MILLISECOND':
       'Duration.microsecondsPerMillisecond',
