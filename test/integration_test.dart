@@ -19,10 +19,11 @@ void main() {
       expect(result.result, 0);
 
       String out = logger.stdOutput.toString();
-      expect(out, contains('line 5 • PI => pi'));
-      expect(out, contains('line 6 • JSON => json'));
-      expect(out, contains('line 7 • Duration.ZERO => Duration.zero'));
-      expect(out, contains('Found 3 fixes'));
+      expect(out, contains('line 5 - PI => pi'));
+      expect(out, contains('line 6 - JSON => json'));
+      expect(out, contains('line 7 - Duration.ZERO => Duration.zero'));
+      expect(out, contains('line 8 - double.INFINITY => double.infinity'));
+      expect(out, contains('Found 4 fixes'));
     });
   });
 }
@@ -33,7 +34,7 @@ class BufferLogger implements Logger {
 
   BufferLogger() {}
 
-  final Ansi ansi = new Ansi(false);
+  final Ansi ansi = new TestAnsi();
 
   void flush() {}
 
@@ -72,4 +73,10 @@ class _SimpleProgress implements Progress {
   void cancel() {}
 
   void finish({String message, bool showTiming}) {}
+}
+
+class TestAnsi extends Ansi {
+  TestAnsi() : super(false);
+
+  String get bullet => '-';
 }
