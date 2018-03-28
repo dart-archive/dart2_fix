@@ -4,10 +4,13 @@
 
 import 'dart:io';
 
-import 'package:dart2_fix/src/dart2_fix.dart' as dart2_fix;
+import 'package:dart2_fix/src/dart_fix.dart';
+import 'package:dart2_fix/src/model.dart';
+
+// TODO: tests
 
 main(List<String> args) async {
-  dart2_fix.ExitResult result = await dart2_fix.main(args);
+  ExitResult result = await dartFix(args);
   if (!result.isOk && result.errorMessage != null) {
     stderr.writeln(result.errorMessage);
   }
