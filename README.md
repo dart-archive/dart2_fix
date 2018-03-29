@@ -71,8 +71,32 @@ and to apply fixes, run:
 flutter packages pub global run dart2_fix --apply
 ```
 
+### Will this make all of my code Dart 2 compliant?
+
+No.  Currently this only fixes the renaming of various deprecated constant
+names.  Some of the less uniform constant renamings are not handled by this
+tool. For example `Endianness.BIG_ENDIAN` has been renamed to `Endian.big` but
+this will not be caught.  After running this tool, remaining issues can be found
+by running the dart analyzer (or flutter analyze) and fixing any deprecation
+warnings.
+
+### I'm getting new static (or runtime errors) after running dart2_fix, what went wrong?
+
+This tool can't catch conflicts between the new constant names and any fields or
+local variables that you might have in scope.  If you get new analysis warnings
+or runtime failures after running this tool, check to see whether one of the
+changes made has caused a naming conflict with something else in scope.  The
+most common cause of this is having a local variable named `json` in a scope
+where `JSON.decode` gets renamed to `json.decode`.  To help with fixing these
+kinds of conflicts, the following top level members have been added to
+`dart:convert`: `jsonDecode`, `jsonEncode`, `base64Decode`, `base64Encode`, and
+`base64UrlEncode`.  These top level members are equivalent to `json.decode`,
+`json.decode`, etc, and can be used to avoid naming conflicts where required.
+
+
 ### Features and bugs
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [tracker]: https://github.com/dart-lang/dart2_fix/issues
+
