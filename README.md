@@ -8,7 +8,7 @@ A tool to migrate API usage to Dart 2.
 source code to Dart 2 ones. Currently, it focuses on updating deprecated constant names; for example:
 - update `dart:convert`'s `UTF8` to `utf8`
 - update `dart:core`'s `Duration.ZERO` to `Duration.zero`
-- update `dart:math`'s `PI` to `pi
+- update `dart:math`'s `PI` to `pi`
 
 ### How do I use it?
 
