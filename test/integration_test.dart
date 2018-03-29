@@ -23,7 +23,8 @@ void main() {
       expect(out, contains('line 6 - JSON => json'));
       expect(out, contains('line 7 - Duration.ZERO => Duration.zero'));
       expect(out, contains('line 8 - double.INFINITY => double.infinity'));
-      expect(out, contains('Found 4 fixes'));
+      expect(out, contains('line 9 - DateTime.AUGUST => DateTime.august'));
+      expect(out, contains('Found 5 fixes'));
     });
   });
 }
