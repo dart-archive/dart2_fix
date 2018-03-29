@@ -10,6 +10,9 @@ source code to Dart 2 ones. Currently, it focuses on updating deprecated constan
 - update `dart:core`'s `Duration.ZERO` to `Duration.zero`
 - update `dart:math`'s `PI` to `pi`
 
+For more information about preparing your code for Dart 2, please see the
+[Dart 2 migration guide](http://www.dartlang.org/dart-2).
+
 ### How do I use it?
 
 To install, run `pub global activate dart2_fix`. Then, from your project directory, run:
