@@ -42,7 +42,7 @@ final Map<String, String> _textReplacements = {
   'DateTime.MAY': 'DateTime.may',
   'DateTime.JUNE': 'DateTime.june',
   'DateTime.JULY': 'DateTime.july',
-  'DateTime.AUGUSR': 'DateTime.august',
+  'DateTime.AUGUST': 'DateTime.august',
   'DateTime.SEPTEMBER': 'DateTime.september',
   'DateTime.OCTOBER': 'DateTime.october',
   'DateTime.NOVEMBER': 'DateTime.november',

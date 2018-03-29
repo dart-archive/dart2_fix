@@ -6,4 +6,5 @@ void main() {
   print(JSON); // dart:convert
   print(Duration.ZERO); // dart:core
   print(double.INFINITY); // dart:core
+  print(DateTime.AUGUST); // dart:core
 }
