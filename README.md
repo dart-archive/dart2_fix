@@ -4,8 +4,11 @@ A tool to migrate API usage to Dart 2.
 
 ### What does it do?
 
-`dart2_fix` migrates API usage from Dart 1 code to Dart 2 code. Currently, it focuses on updating
-deprecated constant names (like `dart:convert`'s `UTF8` to `utf8`).
+`dart2_fix` is a command line utility that can automatically migrate some Dart 1 API usages in your
+source code to Dart 2 ones. Currently, it focuses on updating deprecated constant names; for example:
+- update `dart:convert`'s `UTF8` to `utf8`
+- update `dart:core`'s `Duration.ZERO` to `Duration.zero`
+- update `dart:math`'s `PI` to `pi
 
 ### How do I use it?
 
