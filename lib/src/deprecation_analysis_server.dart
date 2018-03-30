@@ -67,11 +67,14 @@ class DeprecationLocator {
     await completer.future;
 
     List<String> sources = errorMap.keys.toList();
-    List<AnalysisError> errors =
-        sources.map((String key) => errorMap[key]).fold([], (List a, List b) {
-      a.addAll(b);
-      return a;
-    }).toList();
+    List<AnalysisError> errors = sources
+        .map((String key) => errorMap[key])
+        .fold([], (List a, List b) {
+          a.addAll(b);
+          return a;
+        })
+        .toList()
+        .cast<AnalysisError>();
 
     DeprecationResults results = new DeprecationResults([], []);
 
