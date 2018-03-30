@@ -13,8 +13,6 @@ import 'package:dart2_fix/src/model.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 
-// TODO: audit and simplify code
-
 final NumberFormat _nf = new NumberFormat('0.0');
 
 Future<ExitResult> dartFix(List<String> args) async {
@@ -100,10 +98,12 @@ Future<ExitResult> dartFixInternal(
 
     String suffix = performDryRun ? '' : '; no changes applied';
 
+    double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     return new ExitResult(
         1,
         'Found ${issues.errors.length} analysis ${_pluralize(
-            issues.errors.length, 'error', 'errors')}$suffix.');
+            issues.errors.length, 'error', 'errors')}$suffix (in ${_nf.format(
+            seconds)}s).');
   }
 
   ChangeManager changeManager = ChangeManager.create();
