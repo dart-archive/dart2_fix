@@ -15,3 +15,6 @@ dartanalyzer --fatal-warnings .
 
 # Run the unit tests.
 pub run test
+
+# Ensure that we can analyze ourself (and, run with Dart 2 runtime semantics)
+dart --preview-dart-2 bin/dart2_fix.dart
