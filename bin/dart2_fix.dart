@@ -7,8 +7,6 @@ import 'dart:io';
 import 'package:dart2_fix/src/dart_fix.dart';
 import 'package:dart2_fix/src/model.dart';
 
-// TODO: tests
-
 main(List<String> args) async {
   ExitResult result = await dartFix(args);
   if (!result.isOk && result.errorMessage != null) {

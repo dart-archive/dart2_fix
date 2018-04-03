@@ -11,13 +11,16 @@ import 'package:dart2_fix/src/model.dart';
 import 'package:path/path.dart' as path;
 
 class DeprecationLocator {
-  DeprecationLocator();
+  final Logger logger;
 
-  Future<DeprecationResults> locateIssues(
-      List<String> directories, Logger logger) async {
-    AnalysisServer client = await AnalysisServer.create(
-        //vmArgs: ['--preview-dart-2'],
-        );
+  DeprecationLocator(this.logger);
+
+  Future<DeprecationResults> locateIssues(List<String> directories) async {
+    AnalysisServer client = await AnalysisServer.create(onRead: (String str) {
+      logger.trace('<== ${_trimMax(str)}');
+    }, onWrite: (String str) {
+      logger.trace('==> ${_trimMax(str)}');
+    });
 
     Completer completer = new Completer();
     client.processCompleter.future.then((int code) {
@@ -111,5 +114,15 @@ class SourceLoader {
   String loadSource(String filePath) {
     return cache.putIfAbsent(
         filePath, () => new File(filePath).readAsStringSync());
+  }
+}
+
+String _trimMax(String str) {
+  final int max = 200;
+
+  if (str.length > max) {
+    return str.substring(0, 200) + '...';
+  } else {
+    return str;
   }
 }

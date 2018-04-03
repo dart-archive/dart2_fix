@@ -5,7 +5,7 @@ homepage: https://github.com/dart-lang/dart2_fix
 version: 1.0.0+2
 
 environment:
-  sdk: '>=1.20.1 <2.0.0'
+  sdk: '>=2.0.0-dev.36.0 <2.0.0'
 
 dependencies:
   analysis_server_lib: ^0.1.4

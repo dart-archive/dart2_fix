@@ -23,6 +23,8 @@ Future<ExitResult> dartFix(List<String> args) async {
       abbr: 'w',
       negatable: false,
       help: "Apply the refactoring changes to the project's source files.");
+  argParser.addFlag('verbose',
+      negatable: false, help: 'Print verbose logging information.');
   argParser.addFlag('color',
       help: 'Use ansi colors when printing messages.',
       defaultsTo: Ansi.terminalSupportsAnsi);
@@ -54,10 +56,14 @@ Future<ExitResult> dartFix(List<String> args) async {
     }
   }
 
+  final bool verbose = results['verbose'];
   Ansi ansi = new Ansi(results.wasParsed('color')
       ? results['color']
       : Ansi.terminalSupportsAnsi);
-  Logger logger = new Logger.standard(ansi: ansi);
+  Logger logger = verbose
+      ? new Logger.verbose(ansi: ansi)
+      : new Logger.standard(ansi: ansi);
+
   final bool performDryRun = !results['apply'];
 
   return await dartFixInternal(logger, dirs, performDryRun);
@@ -78,9 +84,9 @@ Future<ExitResult> dartFixInternal(
   }
 
   Stopwatch stopwatch = new Stopwatch()..start();
-  DeprecationLocator locator = new DeprecationLocator();
+  DeprecationLocator locator = new DeprecationLocator(logger);
   final DeprecationResults issues =
-      await locator.locateIssues(dirs.map((d) => d.path).toList(), logger);
+      await locator.locateIssues(dirs.map((d) => d.path).toList());
 
   progress.finish();
 
