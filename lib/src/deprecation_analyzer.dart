@@ -41,7 +41,7 @@ class DeprecationLocator {
       // TODO(devoncarew): analyzedFiles() is returning non-Dart files. Either
       // it shouldn't, or session.getResolvedAst() should not try and parse
       // non-Dart files.
-      for (String path in context.analyzedFiles()) {
+      for (String path in context.contextRoot.analyzedFiles()) {
         if (!path.endsWith('.dart')) {
           continue;
         }

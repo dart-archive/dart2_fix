@@ -1,3 +1,7 @@
+## unreleased
+# Add a `dart2_fix` pub run entrypoint
+# updates to the latest version of packages
+
 ## 1.0.1
 # Made the tool work under Dart 2 runtime semantics.
 # Updated when we print timing info for the tool.
