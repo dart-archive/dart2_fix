@@ -206,8 +206,6 @@ Future<ExitResult> dartFixInternal(
 
 Future<ExitResult> checkPackage(
     Logger logger, String packageName, bool performDryRun) async {
-  logger.stdout('Checking package $packageName...');
-
   String jsonData =
       await _uriDownload('https://pub.dartlang.org/api/packages/$packageName/');
   Map json = jsonDecode(jsonData);
@@ -218,17 +216,13 @@ Future<ExitResult> checkPackage(
     return new ExitResult(1, 'No homepage definied for package $packageName.');
   }
 
-  if (!homepage.startsWith('https://github.com/')) {
+  Uri homepageUri = Uri.parse(homepage);
+  if (homepageUri.host != 'github.com') {
     return new ExitResult(
         1, "Homepage is '$homepage', but we require it to be a github repo.");
   }
 
-  String fragment = homepage.substring('https://github.com/'.length);
-  if (fragment.endsWith('/')) {
-    fragment = fragment.substring(0, fragment.length - 1);
-  }
-
-  if (fragment.split('/').length > 2) {
+  if (homepageUri.path.substring(1).split('/').length > 2) {
     return new ExitResult(
         1,
         'Unsupported homepage reference: $homepage.\n'
@@ -243,7 +237,7 @@ Future<ExitResult> checkPackage(
   if (performDryRun) {
     progress = logger.progress('Cloning $homepage into $packageName');
     try {
-      await gitClone(homepage, dir);
+      await gitClone(homepageUri, dir);
     } finally {
       progress.finish();
     }
@@ -259,8 +253,8 @@ Future<ExitResult> checkPackage(
   return await dartFixInternal(logger, [dir], performDryRun);
 }
 
-Future gitClone(String homepage, Directory dir) async {
-  Process process = await Process.start('git', ['clone', homepage, '.'],
+Future gitClone(Uri uri, Directory dir) async {
+  Process process = await Process.start('git', ['clone', uri.toString(), '.'],
       workingDirectory: dir.path);
   return process.exitCode;
 }
