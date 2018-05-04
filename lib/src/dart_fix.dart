@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -23,6 +24,11 @@ Future<ExitResult> dartFix(List<String> args) async {
       abbr: 'w',
       negatable: false,
       help: "Apply the refactoring changes to the project's source files.");
+  argParser.addOption('check-package',
+      help:
+          'Retrieve the source for the given hosted package and run checks on '
+          'it\n(this command is not typically run by users).',
+      valueHelp: 'package name');
   argParser.addFlag('verbose',
       negatable: false, help: 'Print verbose logging information.');
   argParser.addFlag('color',
@@ -65,8 +71,13 @@ Future<ExitResult> dartFix(List<String> args) async {
       : new Logger.standard(ansi: ansi);
 
   final bool performDryRun = !results['apply'];
+  final String packageName = results['check-package'];
 
-  return await dartFixInternal(logger, dirs, performDryRun);
+  if (packageName != null) {
+    return await checkPackage(logger, packageName, performDryRun);
+  } else {
+    return await dartFixInternal(logger, dirs, performDryRun);
+  }
 }
 
 // public for testing
@@ -193,6 +204,74 @@ Future<ExitResult> dartFixInternal(
   return ExitResult.ok;
 }
 
+Future<ExitResult> checkPackage(
+    Logger logger, String packageName, bool performDryRun) async {
+  logger.stdout('Checking package $packageName...');
+
+  String jsonData =
+      await _uriDownload('https://pub.dartlang.org/api/packages/$packageName/');
+  Map json = jsonDecode(jsonData);
+  Map pubspec = json['latest']['pubspec'];
+  String homepage = pubspec['homepage'];
+
+  if (homepage == null) {
+    return new ExitResult(1, 'No homepage definied for package $packageName.');
+  }
+
+  if (!homepage.startsWith('https://github.com/')) {
+    return new ExitResult(
+        1, "Homepage is '$homepage', but we require it to be a github repo.");
+  }
+
+  String fragment = homepage.substring('https://github.com/'.length);
+  if (fragment.endsWith('/')) {
+    fragment = fragment.substring(0, fragment.length - 1);
+  }
+
+  if (fragment.split('/').length > 2) {
+    return new ExitResult(
+        1,
+        'Unsupported homepage reference: $homepage.\n'
+        'This tool only supports a homepage reference that points to the root of a repo.');
+  }
+
+  Directory dir = new Directory(packageName);
+  dir.createSync();
+
+  Progress progress;
+
+  if (performDryRun) {
+    progress = logger.progress('Cloning $homepage into $packageName');
+    try {
+      await gitClone(homepage, dir);
+    } finally {
+      progress.finish();
+    }
+
+    progress = logger.progress('Running pub get');
+    try {
+      await pubGet(dir);
+    } finally {
+      progress.finish();
+    }
+  }
+
+  return await dartFixInternal(logger, [dir], performDryRun);
+}
+
+Future gitClone(String homepage, Directory dir) async {
+  Process process = await Process.start('git', ['clone', homepage, '.'],
+      workingDirectory: dir.path);
+  return process.exitCode;
+}
+
+Future pubGet(Directory dir) async {
+  String pubPath = p.join(p.dirname(Platform.resolvedExecutable), 'pub');
+  Process process =
+      await Process.start(pubPath, ['get'], workingDirectory: dir.path);
+  return process.exitCode;
+}
+
 String _pluralize(int count, String singular, String plural) =>
     count == 1 ? singular : plural;
 
@@ -200,4 +279,17 @@ void _printUsage(ArgParser argParser) {
   print('usage: dart2_fix [options...] <directories>');
   print('');
   print(argParser.usage);
+}
+
+Future<String> _uriDownload(String uri) async {
+  HttpClient client = new HttpClient();
+  HttpClientRequest request = await client.getUrl(Uri.parse(uri));
+  HttpClientResponse response = await request.close();
+
+  Completer<String> completer = new Completer<String>();
+  StringBuffer contents = new StringBuffer();
+  response.transform(utf8.decoder).listen((String data) {
+    contents.write(data);
+  }, onDone: () => completer.complete(contents.toString()));
+  return completer.future;
 }

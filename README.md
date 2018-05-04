@@ -99,4 +99,3 @@ kinds of conflicts, the following top level members have been added to
 Please file feature requests and bugs at the [issue tracker][tracker].
 
 [tracker]: https://github.com/dart-lang/dart2_fix/issues
-
