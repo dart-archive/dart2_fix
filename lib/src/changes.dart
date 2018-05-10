@@ -97,6 +97,9 @@ final Map<String, String> _textReplacements = {
   'Int8List.BYTES_PER_ELEMENT': 'Int8List.bytesPerElement',
   // and, other (long tail) dart:typed_data renames omitted
 
+  // Note, for the dart:io changes, we omit checking for top-level READ, WRITE,
+  // APPEND, WRITE_ONLY, and WRITE_ONLY_APPEND as those may have false positives.
+
   // dart:io/data_transformer.dart
   'ZLIB': 'zlib',
   'GZIP': 'gzip',
