@@ -1,3 +1,6 @@
+## 1.0.3
+- Add support for deprecated `dart:io` constants.
+
 ## 1.0.2
 - Add a `dart2_fix` pub run entry-point.
 - Updates to the latest version of packages.
