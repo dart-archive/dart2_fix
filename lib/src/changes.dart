@@ -12,6 +12,11 @@ final Map<String, String> _textReplacements = {
   'Zone.ROOT': 'Zone.root',
 
   // dart:convert
+  '{JSON}.encode': 'jsonEncode',
+  '{JSON}.decode': 'jsonDecode',
+  '{BASE64}.encode': 'base64Encode',
+  '{BASE64}.decode': 'base64Decode',
+
   'ASCII': 'ascii',
   'BASE64': 'base64',
   'BASE64URL': 'base64Url',
@@ -201,6 +206,9 @@ final Map<String, String> _textReplacements = {
 
   // dart:io/string_transformer.dart
   'SYSTEM_ENCODING': 'systemEncoding',
+
+  // @proxy annotation
+  '@{proxy}': '',
 };
 
 /// A class that can look up the correct change to perform for a given issue.
@@ -212,10 +220,18 @@ class ChangeManager {
   final Map<String, String> textReplacements;
 
   Set<String> keys;
+  List<ChangeBuilder> changeBuilders;
 
   ChangeManager._(this.textReplacements) {
-    keys = new Set.from(textReplacements.keys.map((key) =>
-        key.indexOf('.') != -1 ? key.substring(key.indexOf('.') + 1) : key));
+    keys = new Set();
+    changeBuilders = [];
+
+    for (String pattern in textReplacements.keys) {
+      final ChangeBuilder builder =
+          new ChangeBuilder(pattern, textReplacements[pattern]);
+      keys.add(builder.deprecated);
+      changeBuilders.add(builder);
+    }
   }
 
   /// Given an analysis issue, look up the correct change. Returns `null` if
@@ -225,24 +241,61 @@ class ChangeManager {
       return null;
     }
 
-    String matchingSource = issue.matchingSource;
-    String suffixFragment = '.${matchingSource}';
-    for (String key in _textReplacements.keys) {
-      if (key == matchingSource) {
-        return new TextReplaceChange(
-            issue, issue.offset, key, textReplacements[key]);
-      } else if (key.endsWith(suffixFragment)) {
-        // Check to see if we find the full key.
-        int offset = issue.offset - key.length + suffixFragment.length - 1;
-        if (offset >= 0 &&
-            issue.contents.substring(offset, offset + key.length) == key) {
-          return new TextReplaceChange(
-              issue, offset, key, textReplacements[key]);
-        }
+    for (ChangeBuilder builder in changeBuilders) {
+      if (builder.matches(issue)) {
+        return builder.createChange(issue);
       }
     }
 
     return null;
+  }
+}
+
+class ChangeBuilder {
+  String deprecated;
+  int offset;
+  String match;
+  String replacement;
+
+  ChangeBuilder(String pattern, String replace) {
+    this.replacement = replace;
+
+    if (pattern.contains('{')) {
+      deprecated =
+          pattern.substring(pattern.indexOf('{') + 1, pattern.indexOf('}'));
+      match = pattern.replaceAll('{', '').replaceAll('}', '');
+      offset = pattern.indexOf('{');
+    } else if (pattern.contains('.')) {
+      deprecated = pattern.substring(pattern.indexOf('.') + 1);
+      match = pattern;
+      offset = pattern.length - deprecated.length;
+    } else {
+      deprecated = pattern;
+      offset = 0;
+      match = pattern;
+    }
+  }
+
+  bool matches(Issue issue) {
+    if (issue.matchingSource != deprecated) {
+      return false;
+    }
+
+    final int x = issue.offset - offset;
+    if (x < 0 || (x + match.length) > issue.contents.length) {
+      return false;
+    }
+
+    if (issue.contents.substring(x, x + match.length) == match) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Change createChange(Issue issue) {
+    return new TextReplaceChange(
+        issue, issue.offset - offset, match, replacement);
   }
 }
 
@@ -275,7 +328,8 @@ class TextReplaceChange extends Change {
 
   TextReplaceChange(this.issue, this.offset, this.original, this.replacement);
 
-  String get describe => '$original => $replacement';
+  String get describe =>
+      '$original => ${replacement.isEmpty ? "''" : replacement}';
 
   int get line => issue.line;
 

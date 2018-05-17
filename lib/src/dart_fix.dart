@@ -76,13 +76,16 @@ Future<ExitResult> dartFix(List<String> args) async {
   if (packageName != null) {
     return await checkPackage(logger, packageName, performDryRun);
   } else {
-    return await dartFixInternal(logger, dirs, performDryRun);
+    return await dartFixInternal(logger, dirs, performDryRun: performDryRun);
   }
 }
 
 // public for testing
 Future<ExitResult> dartFixInternal(
-    Logger logger, List<Directory> dirs, bool performDryRun) async {
+  Logger logger,
+  List<Directory> dirs, {
+  bool performDryRun: true,
+}) async {
   final Ansi ansi = logger.ansi;
 
   Progress progress;
@@ -250,7 +253,7 @@ Future<ExitResult> checkPackage(
     }
   }
 
-  return await dartFixInternal(logger, [dir], performDryRun);
+  return await dartFixInternal(logger, [dir], performDryRun: performDryRun);
 }
 
 Future gitClone(Uri uri, Directory dir) async {
