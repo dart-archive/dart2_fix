@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cli_util/cli_logging.dart';
 import 'package:dart2_fix/src/dart_fix.dart';
 import 'package:dart2_fix/src/model.dart';
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 // Copyright (c) 2018, the Dart project authors.  Please see the AUTHORS file
@@ -11,11 +12,21 @@ import 'package:test/test.dart';
 
 void main() {
   group('DartFix', () {
-    test('check ', () async {
-      BufferLogger logger = new BufferLogger();
+    Project project;
+    BufferLogger logger;
 
-      ExitResult result =
-          await dartFixInternal(logger, [new Directory('test/data')], true);
+    setUp(() {
+      logger = new BufferLogger();
+    });
+
+    tearDown(() {
+      project?.delete();
+    });
+
+    test('check', () async {
+      ExitResult result = await dartFixInternal(
+          logger, [new Directory('test/data')],
+          performDryRun: true);
       expect(result.result, 0);
 
       String out = logger.stdOutput.toString();
@@ -43,6 +54,62 @@ void main() {
       );
 
       expect(out, contains('Found 11 fixes'));
+    });
+
+    test('JSON.encode', () async {
+      project = Project.createProject('''
+import 'dart:convert';
+
+void main() {
+  String str = JSON.encode({});
+  dynamic data = JSON.decode(str);
+  print(data);
+
+  String encoded = BASE64.encode([1, 2, 3]);
+  List decoded = BASE64.decode(encoded);
+  print(decoded);
+}
+''');
+
+      ExitResult result = await dartFixInternal(logger, [project.projectDir],
+          performDryRun: false);
+      expect(result.result, 0);
+
+      expect(logger.stdOutput.toString(), contains('Applied 4 fixes'));
+
+      expect(project.getMainSource(), '''
+import 'dart:convert';
+
+void main() {
+  String str = jsonEncode({});
+  dynamic data = jsonDecode(str);
+  print(data);
+
+  String encoded = base64Encode([1, 2, 3]);
+  List decoded = base64Decode(encoded);
+  print(decoded);
+}
+''');
+    });
+
+    test('proxy', () async {
+      project = Project.createProject('''
+@proxy
+String foo = 'foo';
+void main() { print(foo); }
+''');
+
+      ExitResult result = await dartFixInternal(logger, [project.projectDir],
+          performDryRun: false);
+      expect(result.result, 0);
+
+      expect(logger.stdOutput.toString(), contains('Applied 1 fix'));
+
+      expect(project.getMainSource(), '''
+
+String foo = 'foo';
+void main() { print(foo); }
+''');
     });
   });
 }
@@ -98,4 +165,32 @@ class TestAnsi extends Ansi {
   TestAnsi() : super(false);
 
   String get bullet => '-';
+}
+
+class Project {
+  Directory projectDir;
+
+  static Project createProject(String mainSource) {
+    Directory dir = Directory.systemTemp.createTempSync('dart2fix');
+
+    File mainFile = new File(path.join(dir.path, 'lib', 'main.dart'));
+    mainFile.parent.createSync(recursive: true);
+    mainFile.writeAsStringSync(mainSource);
+
+    File packagesFile = new File(path.join(dir.path, '.packages'));
+    packagesFile.writeAsStringSync('');
+
+    return new Project(dir);
+  }
+
+  Project(this.projectDir);
+
+  String getMainSource() {
+    return new File(path.join(projectDir.path, 'lib', 'main.dart'))
+        .readAsStringSync();
+  }
+
+  void delete() {
+    projectDir.deleteSync(recursive: true);
+  }
 }

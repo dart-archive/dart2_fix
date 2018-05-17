@@ -1,3 +1,8 @@
+## 1.0.4
+- Add support for removing `@proxy` annotations.
+- Convert `JSON.encode` references to `jsonEncode` (and similarly for jsonDecode,
+  base64Encode, and base64Decode).
+
 ## 1.0.3
 - Add support for deprecated `dart:io` constants.
 
