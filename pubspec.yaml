@@ -2,7 +2,7 @@ name: dart2_fix
 author: Dart Team <misc@dartlang.org>
 description: A tool to migrate API usage to Dart 2.
 homepage: https://github.com/dart-lang/dart2_fix
-version: 1.0.4
+version: 1.0.5
 
 environment:
   sdk: '>=2.0.0-dev.17.0 <2.0.0'

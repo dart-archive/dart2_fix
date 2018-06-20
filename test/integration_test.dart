@@ -53,7 +53,48 @@ void main() {
         contains('line 16 - StdioType.TERMINAL => StdioType.terminal'),
       );
 
-      expect(out, contains('Found 11 fixes'));
+      expect(
+        out,
+        contains(
+            'line 17 - HttpStatus.CONTINUE => HttpStatus.continue_')
+      );
+      expect(
+        out,
+        contains(
+            'line 18 - HttpStatus.NETWORK_CONNECT_TIMEOUT_ERROR => HttpStatus.networkConnectTimeoutError')
+      );
+      expect(
+        out,
+        contains(
+            'line 19 - HttpHeaders.ACCEPT => HttpHeaders.accept')
+      );
+      expect(
+        out,
+        contains(
+            'line 20 - HttpHeaders.REQUEST_HEADERS => HttpHeaders.requestHeaders')
+      );
+      expect(
+        out,
+        contains(
+            'line 21 - ContentType.JSON => ContentType.json')
+      );
+      expect(
+        out,
+        contains(
+            'line 22 - HttpClient.DEFAULT_HTTPS_PORT => HttpClient.defaultHttpsPort')
+      );
+      expect(
+        out,
+        contains(
+            'line 23 - WebSocketStatus.NORMAL_CLOSURE => WebSocketStatus.normalClosure')
+      );
+      expect(
+        out,
+        contains(
+            'line 24 - WebSocket.CLOSED => WebSocket.closed')
+      );
+
+      expect(out, contains('Found 19 fixes'));
     });
 
     test('JSON.encode', () async {

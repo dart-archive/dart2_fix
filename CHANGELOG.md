@@ -1,3 +1,6 @@
+## 1.0.5
+- Support more constants related to HTTP.
+
 ## 1.0.4
 - Add support for removing `@proxy` annotations.
 - Convert `JSON.encode` references to `jsonEncode` (and similarly for jsonDecode,
