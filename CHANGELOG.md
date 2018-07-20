@@ -1,3 +1,6 @@
+## 1.0.6
+- Upgraded dependencies for Dart 2.
+
 ## 1.0.5
 - Support more constants related to HTTP.
 
