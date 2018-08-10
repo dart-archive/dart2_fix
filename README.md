@@ -2,6 +2,8 @@
 
 A tool to migrate API usage to Dart 2.
 
+**Note: This tool needs to be run on a version of the Dart SDK that contains the deprecated annotations (a pre- `2.0.0-dev.68.0` SDK).**
+
 ### What does it do?
 
 `dart2_fix` is a command line utility that can automatically migrate some Dart 1 API usages in your
